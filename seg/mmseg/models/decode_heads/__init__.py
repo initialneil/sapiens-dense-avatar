@@ -50,6 +50,8 @@ from .vit_stereo_pointmap_head import VitStereoPointmapHead
 from .vit_stereo_correspondences_head import VitStereoCorrespondencesHead
 from .vit_normal_head2 import VitNormalHead2
 
+from .vit_xyziuv_head import VitXYZIUVHead
+
 __all__ = [
     'FCNHead', 'PSPHead', 'ASPPHead', 'PSAHead', 'NLHead', 'GCHead', 'CCHead',
     'UPerHead', 'DepthwiseSeparableASPPHead', 'ANNHead', 'DAHead', 'OCRHead',
@@ -61,5 +63,6 @@ __all__ = [
     'LightHamHead', 'PIDHead', 'DDRHead', 'VPDDepthHead', 'SideAdapterCLIPHead',
     'VitHead', 'VitDepthHead', 'VitNormalHead', 'VitHDRIHead', 'VitPointmapHead',
     'VitStereoPointmapHead', 'VitMetricDepthHead', 'VitStereoCorrespondencesHead',
-    'VitNormalHead2'
+    'VitNormalHead2',
+    'VitXYZIUVHead',
 ]

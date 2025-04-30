@@ -39,6 +39,8 @@ from .general_dataset_wrappers import GeneralCombinedDataset
 from .stereo_correspondences_render_people import StereoCorrespondencesRenderPeopleDataset
 from .stereo_correspondences_dataset_wrappers import StereoCorrespondencesCombinedDataset
 
+from .dense_avatar_general import DenseAvatarGeneralDataset
+
 from .cihp import CIHPDataset
 from .voc import PascalVOCDataset
 
@@ -74,6 +76,10 @@ from .transforms.pointmap_transforms import RandomPointmapResizeCompensate, Poin
 from .transforms.stereo_pointmap_transforms import PackStereoPointmapInputs, TestPackStereoPointmapInputs
 from .transforms.stereo_correspondences_transforms import PackStereoCorrespondencesInputs
 
+from .dense_avatar_dataset_wrappers import DenseAvatarCombinedDataset
+from .transforms.xyziuv_transforms import RandomXYZIUVResizeCompensate, XYZIUVRandomFlip, \
+                    RandomXYZIUVCrop, XYZIUVResize, GenerateXYZIUVTarget, PackXYZIUVInputs
+
 # yapf: enable
 __all__ = [
     'BaseSegDataset', 'BioMedical3DRandomCrop', 'BioMedical3DRandomFlip',
@@ -99,4 +105,5 @@ __all__ = [
     'ATR2GoliathDataset', 'Pascal2GoliathDataset', 'FaceDataset',
     'DepthCombinedDataset', 'CIHPDataset', 'NormalGeneralDataset',
     'GeneralCombinedDataset', 
+    'DenseAvatarGeneralDataset', 'DenseAvatarCombinedDataset',
 ]
