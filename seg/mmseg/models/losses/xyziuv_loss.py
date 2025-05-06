@@ -38,7 +38,10 @@ class XYZIUV_XYZ_MSELoss(nn.Module):
         self._loss_name = loss_name
 
     def forward(self, pred_full, target_full, weight=None, avg_factor=None, reduction_override=None):
-        assert pred_full.shape == target_full.shape, f'The shapes of pred ({pred_full.shape}) and target ({target_full.shape}) are mismatched'
+        # BCHW. pred_full is xyz 012 uv, target_full is xyz label uv.
+        assert pred_full.shape[0] == target_full.shape[0], f'The shapes of pred ({pred_full.shape}) and target ({target_full.shape}) are mismatched'
+        assert pred_full.shape[2] == target_full.shape[2], f'The shapes of pred ({pred_full.shape}) and target ({target_full.shape}) are mismatched'
+        assert pred_full.shape[3] == target_full.shape[3], f'The shapes of pred ({pred_full.shape}) and target ({target_full.shape}) are mismatched'
         assert reduction_override in (None, 'none', 'mean', 'sum'), 'Invalid reduction_override value'
 
         reduction = reduction_override if reduction_override else self.reduction
@@ -47,9 +50,9 @@ class XYZIUV_XYZ_MSELoss(nn.Module):
         # pred: [xyz 012 uv]
         # target: [xyz label uv]
         # valid_mask from xyziuv.i
-        pred = pred_full[..., :3]
-        target = target_full[..., :3]
-        valid_mask = target_full[..., 3:4] > 1e-3
+        pred = pred_full[:, :3, ...]
+        target = target_full[:, :3, ...]
+        valid_mask = target_full[:, 3:4, ...] > 1e-3
 
         if valid_mask.sum() == 0:
             return 0.0 * pred.sum()
@@ -132,8 +135,9 @@ class XYZIUV_I_CELoss(CrossEntropyLoss):
         # pred: [xyz 012 uv]
         # target: [xyz label uv]
         # valid_mask from xyziuv.i
-        cls_score = pred_full[..., 3:6]
-        label = target_full[..., 3:4]
+        cls_score = pred_full[:, 3:6, ...].permute([0, 2, 3, 1]).view(-1, 3)
+        label = target_full[:, 3:4, ...].view(-1).long()
+
         loss_cls = super().forward(cls_score,
                                    label,
                                    weight=weight,
@@ -167,7 +171,9 @@ class XYZIUV_UV_MSELoss(nn.Module):
         self._loss_name = loss_name
 
     def forward(self, pred_full, target_full, weight=None, avg_factor=None, reduction_override=None):
-        assert pred_full.shape == target_full.shape, f'The shapes of pred ({pred_full.shape}) and target ({target_full.shape}) are mismatched'
+        assert pred_full.shape[0] == target_full.shape[0], f'The shapes of pred ({pred_full.shape}) and target ({target_full.shape}) are mismatched'
+        assert pred_full.shape[2] == target_full.shape[2], f'The shapes of pred ({pred_full.shape}) and target ({target_full.shape}) are mismatched'
+        assert pred_full.shape[3] == target_full.shape[3], f'The shapes of pred ({pred_full.shape}) and target ({target_full.shape}) are mismatched'
         assert reduction_override in (None, 'none', 'mean', 'sum'), 'Invalid reduction_override value'
 
         reduction = reduction_override if reduction_override else self.reduction
@@ -176,9 +182,9 @@ class XYZIUV_UV_MSELoss(nn.Module):
         # pred: [xyz 012 uv]
         # target: [xyz label uv]
         # valid_mask from xyziuv.i
-        pred = pred_full[..., 6:8]
-        target = target_full[..., 4:6]
-        valid_mask = target_full[..., 3:4] > 1e-3
+        pred = pred_full[:, 6:8, ...]
+        target = target_full[:, 4:6, ...]
+        valid_mask = target_full[:, 3:4, ...] > 1e-3
 
         if valid_mask.sum() == 0:
             return 0.0 * pred.sum()

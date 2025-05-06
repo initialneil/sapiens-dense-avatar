@@ -30,6 +30,8 @@ from .stereo_correspondences_loss import StereoCorrespondencesLoss
 from .edge_aware_loss import EdgeAwareLoss
 from .unit_norm_loss import UnitNormLoss
 
+from .xyziuv_loss import XYZIUV_XYZ_MSELoss, XYZIUV_I_CELoss, XYZIUV_UV_MSELoss
+
 __all__ = [
     'accuracy', 'Accuracy', 'cross_entropy', 'binary_cross_entropy',
     'mask_cross_entropy', 'CrossEntropyLoss', 'reduce_loss',
@@ -39,4 +41,5 @@ __all__ = [
     'L1Loss', 'MetricDepthL1Loss', 'PointmapSiLogLoss', 'PointmapConsistencyLoss',
     'MetricSiLogLoss', 'PointmapL1Loss', 'StereoPointmapL1Loss', 'StereoPointmapCorrespondenceLoss',
     'StereoCorrespondencesLoss', 'EdgeAwareLoss', 'UnitNormLoss',
+    'XYZIUV_XYZ_MSELoss', 'XYZIUV_I_CELoss', 'XYZIUV_UV_MSELoss',
 ]

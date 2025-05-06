@@ -99,8 +99,6 @@ class RandomXYZIUVResizeCompensate(BaseTransform):
                     return_scale=True,
                     backend='cv2')
 
-            norms = np.linalg.norm(gt_xyziuv_resized, axis=2, keepdims=True)
-            gt_xyziuv_resized = gt_xyziuv_resized / (norms + 1e-6)  # Adding epsilon to avoid division by zero
             results['gt_xyziuv'] = gt_xyziuv_resized
 
             assert results['gt_xyziuv'].shape[0] == results['img'].shape[0] and results['gt_xyziuv'].shape[1] == results['img'].shape[1]
@@ -266,6 +264,7 @@ class XYZIUVRandomFlip(MMCV_RandomFlip):
             gt_xyziuv_flipped = mmcv.imflip(results['gt_xyziuv'], direction=results['flip_direction'])
 
             # both horizontal and vertical flip cause the change of left/right hands
+            # diagnal keep the original left/right hands
             if results['flip_direction'] in ["horizontal", "vertical"]:
                 gt_xyziuv_flipped[:, :, 0] = -gt_xyziuv_flipped[:, :, 0]    # xyziuv.x
                 gt_xyziuv_flipped[:, :, 4] = -gt_xyziuv_flipped[:, :, 4]    # xyziuv.u
@@ -280,8 +279,8 @@ class GenerateXYZIUVTarget(BaseTransform):
 
     def transform(self, results: dict) -> dict:
         gt_xyziuv = results['gt_xyziuv']
-        mask = results['mask']
-        gt_xyziuv[mask == 0] = self.background_val ## set the background to -1000. the loss uses a threshold of -10 to pick up.
+        # mask = results['mask']
+        # gt_xyziuv[mask == 0] = self.background_val ## set the background to -1000. the loss uses a threshold of -10 to pick up.
         results['gt_depth_map'] = gt_xyziuv
         return results
 

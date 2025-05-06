@@ -10,7 +10,10 @@ from .depth_visualization_hook import DepthVisualizationHook
 from .normal_visualization_hook import NormalVisualizationHook
 from .general_visualization_hook import GeneralVisualizationHook
 
+from .xyziuv_visualization_hook import XYZIUVVisualizationHook
+
 __all__ = ['SegVisualizationHook', 'GeneralSegVisualizationHook', 'DepthVisualizationHook', \
             'NormalVisualizationHook', 
             'GeneralVisualizationHook', 
+            'XYZIUVVisualizationHook',
             ]

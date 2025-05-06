@@ -31,7 +31,7 @@ import gzip
 XYZ_SCALE, XYZ_SHIFT = 10000.0, 32768.0
 MASK_SCALE = 32767.0
 UV_SCALE = 50000.0
-def write_xyz_iuv_to_png(xyziuv_fn, xyz, mask_fb, uv_map):
+def save_xyz_iuv_to_png(xyziuv_fn, xyz, mask_fb, uv_map):
     xyziuv = np.concatenate([
         np.concatenate([
             xyz[..., 0:1] * XYZ_SCALE + XYZ_SHIFT,
@@ -45,18 +45,18 @@ def write_xyz_iuv_to_png(xyziuv_fn, xyz, mask_fb, uv_map):
         ], axis=1),
     ], axis=0)
 
-    cv2.imwrite(xyziuv_fn, xyziuv.detach().cpu().numpy().astype(np.uint16))
+    cv2.imwrite(xyziuv_fn, xyziuv.astype(np.uint16))
 
-def read_xyz_iuv_from_png(xyziuv_fn):
+def load_xyz_iuv_from_png(xyziuv_fn):
     img = cv2.imread(xyziuv_fn, cv2.IMREAD_UNCHANGED)
-    xyziuv = img.astype(float)
+    xyziuv = img.astype(np.float32)
     h, w = xyziuv.shape[:2]
     xyz = (xyziuv[:h//2, ...] - XYZ_SHIFT) / XYZ_SCALE
-    xyz = np.stack(xyz.split(w//3, dim=1), axis=-1)
+    xyz = np.stack(np.split(xyz, 3, axis=1), axis=-1)
 
     mask_fb = xyziuv[h//2:h, :w//3, None] / MASK_SCALE
     uv_map = xyziuv[h//2:h, w//3:] / UV_SCALE
-    uv_map = np.stack(uv_map.split(w//3, dim=1), dim=-1)
+    uv_map = np.stack(np.split(uv_map, 2, axis=1), axis=-1)
     return xyz, mask_fb, uv_map
 
 ##-----------------------------------------------------------------------
@@ -124,18 +124,24 @@ class DenseAvatarGeneralDataset(BaseSegDataset):
             data_info = copy.deepcopy(self.data_list[idx])
 
         img = cv2.imread(data_info['rgb_path']) ## bgr image is default
-        xyz, mask_fb, uv_map = read_xyz_iuv_from_png(data_info['xyziuv_path'])
-        gt_xyziuv = np.concatenate([xyz, mask_fb, uv_map], axis=-1)
-        mask = (mask_fb > 0).squeeze(-1)
 
-        rows = np.any(mask, axis=1)
-        cols = np.any(mask, axis=0)
+        if os.path.exists(data_info['xyziuv_path']):
+            xyz, mask_fb, uv_map = load_xyz_iuv_from_png(data_info['xyziuv_path'])
+            gt_xyziuv = np.concatenate([xyz, mask_fb, uv_map], axis=-1)
+            mask = (mask_fb > 0).squeeze(-1).astype(np.uint8) * 255
 
-        # Find the bounding box's bounds
-        y1, y2 = np.where(rows)[0][[0, -1]]
-        x1, x2 = np.where(cols)[0][[0, -1]]
+            rows = np.any(mask, axis=1)
+            cols = np.any(mask, axis=0)
 
-        bbox = np.array([x1, y1, x2, y2], dtype=np.float32).reshape(1, 4)
+            # Find the bounding box's bounds
+            y1, y2 = np.where(rows)[0][[0, -1]]
+            x1, x2 = np.where(cols)[0][[0, -1]]
+
+            bbox = np.array([x1, y1, x2, y2], dtype=np.float32).reshape(1, 4)
+        else:
+            gt_xyziuv = None
+            mask = None
+            bbox = None
 
         data_info = {
             'img': img,

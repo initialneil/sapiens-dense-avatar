@@ -1,0 +1,53 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}"
+        },
+        {
+            "name": "[tools/train] sapiens_0.3b_xyziuv",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "tools/train.py",
+            "cwd": "${workspaceFolder}/seg",
+            "env": {"CUDA_VISIBLE_DEVICES":"2"},
+            "console": "integratedTerminal",
+            "args": [
+                "configs/dense_avatar/bedlam/sapiens_0.3b_xyziuv-1024x768.py", 
+                "--work-dir", "/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_dev", 
+                "--cfg-options", 
+                "train_dataloader.batch_size=1", 
+                "train_dataloader.num_workers=0", 
+                "train_dataloader.persistent_workers=False",
+                "--resume", "/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_static1k/epoch_16.pth",
+            ],
+        },
+        {
+            "name": "[tools/test] sapiens_0.3b_xyziuv",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "tools/test.py",
+            "cwd": "${workspaceFolder}/seg",
+            "env": {"CUDA_VISIBLE_DEVICES":"2"},
+            "console": "integratedTerminal",
+            "args": [
+                "configs/dense_avatar/bedlam/sapiens_0.3b_xyziuv-1024x768.py", 
+                "/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_static1k/epoch_29.pth",
+                "--work-dir", "/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_dev", 
+                "--cfg-options", 
+                "val_dataloader.batch_size=1", 
+                "val_dataloader.num_workers=0", 
+                "val_dataloader.persistent_workers=False",
+            ],
+        },
+    ]
+}
+

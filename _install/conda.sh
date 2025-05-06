@@ -36,16 +36,18 @@ conda install pip -y
 
 # Install fish terminal
 print_green "Installing fish terminal..."
-conda install -c conda-forge fish -y
+conda install -c conda-forge fish -y -v
 
 # Install PyTorch, torchvision, torchaudio, and specific CUDA version
 print_green "Installing PyTorch, torchvision, torchaudio, and CUDA..."
-conda install pytorch torchvision torchaudio "${PYTORCH_VERSION}" -c pytorch -c nvidia -y
+# conda install pytorch torchvision torchaudio "${PYTORCH_VERSION}" -c pytorch -c nvidia -y -v
+pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cu118
 
 # Install additional Python packages
 print_green "Installing additional Python packages..."
 pip install chumpy scipy munkres tqdm cython fsspec yapf==0.40.1 matplotlib packaging omegaconf ipdb ftfy regex
-pip install json_tricks terminaltables modelindex prettytable albumentations libcom
+pip install json_tricks terminaltables modelindex prettytable albumentations # libcom
+pip install future tensorboard
 
 # Change directory to the root of the repository
 cd "$(dirname "$0")/.."

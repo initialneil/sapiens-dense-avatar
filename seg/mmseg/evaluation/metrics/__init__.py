@@ -8,4 +8,6 @@ from .citys_metric import CityscapesMetric
 from .depth_metric import DepthMetric
 from .iou_metric import IoUMetric
 
-__all__ = ['IoUMetric', 'CityscapesMetric', 'DepthMetric']
+from .xyziuv_metric import XYZIUVMetric
+
+__all__ = ['IoUMetric', 'CityscapesMetric', 'DepthMetric', 'XYZIUVMetric']
