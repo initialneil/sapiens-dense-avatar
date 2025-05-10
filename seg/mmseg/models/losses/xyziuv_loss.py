@@ -30,10 +30,12 @@ class XYZIUV_XYZ_MSELoss(nn.Module):
 
     def __init__(self,
                  reduction='mean',
+                 mse_beta=100.0,
                  loss_weight=1.0,
                  loss_name='loss_xyziuv.xyz_mse'):
         super().__init__()
         self.reduction = reduction
+        self.mse_beta = mse_beta
         self.loss_weight = loss_weight
         self._loss_name = loss_name
 
@@ -57,7 +59,9 @@ class XYZIUV_XYZ_MSELoss(nn.Module):
         if valid_mask.sum() == 0:
             return 0.0 * pred.sum()
 
-        loss = F.mse_loss(pred, target, reduction='none') * valid_mask
+        loss = F.mse_loss(pred * self.mse_beta, 
+                          target * self.mse_beta, 
+                          reduction='none') * valid_mask
 
         if reduction == 'mean':
             loss = loss.sum() / valid_mask.sum().clamp(min=1)
@@ -163,10 +167,12 @@ class XYZIUV_UV_MSELoss(nn.Module):
 
     def __init__(self,
                  reduction='mean',
+                 mse_beta=100.0,
                  loss_weight=1.0,
                  loss_name='loss_xyziuv.uv_mse'):
         super().__init__()
         self.reduction = reduction
+        self.mse_beta = mse_beta
         self.loss_weight = loss_weight
         self._loss_name = loss_name
 
@@ -189,7 +195,9 @@ class XYZIUV_UV_MSELoss(nn.Module):
         if valid_mask.sum() == 0:
             return 0.0 * pred.sum()
 
-        loss = F.mse_loss(pred, target, reduction='none') * valid_mask
+        loss = F.mse_loss(pred * self.mse_beta, 
+                          target * self.mse_beta, 
+                          reduction='none') * valid_mask
 
         if reduction == 'mean':
             loss = loss.sum() / valid_mask.sum().clamp(min=1)
@@ -201,6 +209,11 @@ class XYZIUV_UV_MSELoss(nn.Module):
             raise ValueError(f'Invalid reduction type: {reduction}')
 
         loss = weight_reduce_loss(loss, weight, reduction, avg_factor) * self.loss_weight
+
+        # debug: too large loss
+        if loss > 100:
+            print(f'[XYZIUV_UV_MSELoss] loss = {loss}')
+            pass
 
         ## convert nan to 0
         loss = torch.nan_to_num(loss, 

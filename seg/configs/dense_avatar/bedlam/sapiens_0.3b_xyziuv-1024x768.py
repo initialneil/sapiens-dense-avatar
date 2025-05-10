@@ -169,11 +169,12 @@ test_pipeline = [
 
 ##------------------------------------------------------------------------
 ## dataset root path
-data_root = '/mnt/Getea/Datasets/BEDLAM/images/test-mix'
+train_data_root = '/mnt/Getea/Datasets/BEDLAM/images/test-2025.4.15-set1'
+test_data_root = '/mnt/Getea/Datasets/BEDLAM/images/test-2025.4.15-set1'
 
 dataset_train = dict(
         type='DenseAvatarGeneralDataset',
-        data_root=data_root,
+        data_root=train_data_root,
         serialize_data=False,
         )
 
@@ -190,22 +191,27 @@ train_dataloader = dict(
         datasets=train_datasets,
         pipeline=train_pipeline))
 
-val_dataloader = dict(
-    batch_size=1,
-    num_workers=4,
-    persistent_workers=True,
-    sampler=dict(type='DefaultSampler', shuffle=True),
-    dataset=dict(
-        type='DenseAvatarGeneralDataset',
-        data_root=data_root,
-        serialize_data=False,
-        pipeline=test_pipeline))
-
-test_dataloader = val_dataloader
-val_evaluator = dict(type='XYZIUVMetric', 
-                     output_dir=f'{data_root}/sapiens_0.3b_xyziuv_eval')
-test_evaluator = val_evaluator
+##-----------------------------------------------------------------
+# val_evaluator = test_evaluator
+# val_dataloader = test_dataloader
+val_evaluator = None
+test_evaluator = None
+val_dataloader = None
+test_dataloader = None
+val_cfg = None
+test_cfg = None
 
 ##-----------------------------------------------------------------
-test_dataloader = val_dataloader
+# test_dataloader = dict(
+#     batch_size=1,
+#     num_workers=4,
+#     persistent_workers=True,
+#     sampler=dict(type='DefaultSampler', shuffle=True),
+#     dataset=dict(
+#         type='DenseAvatarGeneralDataset',
+#         data_root=test_data_root,
+#         serialize_data=False,
+#         pipeline=test_pipeline))
+# test_evaluator = dict(type='XYZIUVMetric', 
+#                       output_dir=f'{test_data_root}/sapiens_0.3b_xyziuv_eval')
 

@@ -15,6 +15,9 @@ from ..utils import resize
 from typing import List, Tuple, Optional, Sequence, Union
 from torch import Tensor
 from mmseg.utils import ConfigType, SampleList
+import os
+import os.path as osp
+from ...datasets.dense_avatar_general import save_xyz_iuv_to_png
 
 OptIntSeq = Optional[Sequence[int]]
 
@@ -207,4 +210,17 @@ class VitXYZIUVHead(BaseDecodeHead):
                     seg_label,
                     weight=seg_weight,)
 
+        """
+        output_dir = '/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_eval'
+        pred_label = seg_logits[0].permute(1, 2, 0).detach().cpu().numpy()
+        pred_xyz = pred_label[..., :3]
+        pred_i = pred_label[..., 3:6].argmax(axis=-1, keepdims=True)
+        pred_uv = pred_label[..., 6:9]
+
+        basename = osp.splitext(osp.basename(batch_data_samples[0].img_path))[0]
+        os.makedirs(output_dir, exist_ok=True)
+        png_filename = f'{output_dir}/{basename}_xyziuv.png'
+        save_xyz_iuv_to_png(png_filename, pred_xyz, pred_i, pred_uv)
+        """ 
+    
         return loss

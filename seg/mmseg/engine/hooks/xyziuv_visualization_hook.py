@@ -27,6 +27,8 @@ import os
 import cv2
 import tempfile
 
+from ...datasets.dense_avatar_general import save_xyz_iuv_to_png
+
 ##-----------------------------------------------------------------------------------------------------------
 @HOOKS.register_module()
 class XYZIUVVisualizationHook(Hook):
@@ -101,7 +103,7 @@ class XYZIUVVisualizationHook(Hook):
 
         total_curr_iter = runner.iter
 
-        if total_curr_iter % self.interval != 0:
+        if batch_idx > 0 and total_curr_iter % self.interval != 0:
             return
 
         inputs = data_batch['inputs'] ## list of images as tensor. BGR images. they are made RGB by model preprocessor
@@ -152,13 +154,21 @@ class XYZIUVVisualizationHook(Hook):
             if seg_logit.dtype != np.float32:
                 seg_logit = seg_logit.astype(np.float32)
 
+            # prediction
+            pred_xyz = seg_logit[..., :3]
+            pred_i = seg_logit[..., 3:6].argmax(axis=-1, keepdims=True)
+            pred_uv = seg_logit[..., 6:9]
+
+            png_filename = '{}_{}_xyziuv.png'.format(prefix, suffix)
+            save_xyz_iuv_to_png(png_filename, pred_xyz, pred_i, pred_uv)
+
             ### resize pred to the size of image
-            pred_xyz_map = cv2.resize(seg_logit[..., :3], (image.shape[1], image.shape[0]), interpolation=cv2.INTER_LINEAR)
-            pred_i_map = cv2.resize(seg_logit[..., 3:6].argmax(axis=-1), (image.shape[1], image.shape[0]), interpolation=cv2.INTER_NEAREST)
-            pred_uv_map = cv2.resize(seg_logit[..., 6:9], (image.shape[1], image.shape[0]), interpolation=cv2.INTER_LINEAR)
-            vis_pred_xyz_map = self.vis_xyz_map(pred_xyz_map, mask)
-            vis_pred_i_map = self.vis_i_map(pred_i_map)
-            vis_pred_uv_map = self.vis_uv_map(pred_uv_map, mask)
+            vis_pred_xyz_map = cv2.resize(pred_xyz, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_LINEAR)
+            vis_pred_i_map = cv2.resize(pred_i, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_NEAREST)
+            vis_pred_uv_map = cv2.resize(pred_uv, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_LINEAR)
+            vis_pred_xyz_map = self.vis_xyz_map(vis_pred_xyz_map, mask)
+            vis_pred_i_map = self.vis_i_map(vis_pred_i_map)
+            vis_pred_uv_map = self.vis_uv_map(vis_pred_uv_map, mask)
 
             vis_image = np.concatenate([image, vis_gt_xyz_map, vis_pred_xyz_map,
                                         vis_gt_i_map, vis_pred_i_map,
@@ -166,6 +176,7 @@ class XYZIUVVisualizationHook(Hook):
                                         ], axis=1)
             vis_image = cv2.resize(vis_image, (7*self.vis_image_width, self.vis_image_height), interpolation=cv2.INTER_AREA)
             vis_images.append(vis_image)
+
 
         grid_image = np.concatenate(vis_images, axis=0)
 

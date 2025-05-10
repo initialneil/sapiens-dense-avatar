@@ -1,10 +1,11 @@
 cd ../../../..
 
 ###--------------------------------------------------------------
+# sudo nvidia-smi -pl 250
 ## set gpu ids to use.
 # DEVICES=0,
 # DEVICES=0,1,2,3,4,5,6,7,
-DEVICES=0,1,3,4,5,7,
+DEVICES=0,1,3,4,6,7,
 
 RUN_FILE='./tools/dist_train.sh'
 PORT=$(( ((RANDOM<<15)|RANDOM) % 63001 + 2000 ))
@@ -19,7 +20,7 @@ TRAIN_BATCH_SIZE_PER_GPU=1
 
 ## resume_from: to resume a checkpoint from. Starts from the last epoch.
 ## load_from: to load a checkpoint from. not resume. Starts from epoch 0, just loads the weights.
-RESUME_FROM="/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_dev/epoch_1.pth"
+RESUME_FROM="/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_static1k-v2.1/epoch_42.pth"
 LOAD_FROM=''
 
 ##-------------------train mode-----------------------------------

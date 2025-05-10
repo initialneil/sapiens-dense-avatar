@@ -27,7 +27,7 @@
                 "train_dataloader.batch_size=1", 
                 "train_dataloader.num_workers=0", 
                 "train_dataloader.persistent_workers=False",
-                "--resume", "/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_static1k/epoch_16.pth",
+                "--resume", "/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_static1k-v2.1/epoch_42.pth",
             ],
         },
         {
@@ -40,7 +40,7 @@
             "console": "integratedTerminal",
             "args": [
                 "configs/dense_avatar/bedlam/sapiens_0.3b_xyziuv-1024x768.py", 
-                "/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_static1k/epoch_29.pth",
+                "/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_static1k-v2.1/epoch_42.pth",
                 "--work-dir", "/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_dev", 
                 "--cfg-options", 
                 "val_dataloader.batch_size=1", 

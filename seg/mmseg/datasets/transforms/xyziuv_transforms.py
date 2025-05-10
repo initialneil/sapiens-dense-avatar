@@ -267,7 +267,7 @@ class XYZIUVRandomFlip(MMCV_RandomFlip):
             # diagnal keep the original left/right hands
             if results['flip_direction'] in ["horizontal", "vertical"]:
                 gt_xyziuv_flipped[:, :, 0] = -gt_xyziuv_flipped[:, :, 0]    # xyziuv.x
-                gt_xyziuv_flipped[:, :, 4] = -gt_xyziuv_flipped[:, :, 4]    # xyziuv.u
+                gt_xyziuv_flipped[:, :, 4] = 1.0 - gt_xyziuv_flipped[:, :, 4]    # xyziuv.u
 
             results['gt_xyziuv'] = gt_xyziuv_flipped
 
