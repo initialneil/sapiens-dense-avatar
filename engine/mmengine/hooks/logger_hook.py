@@ -355,5 +355,5 @@ class LoggerHook(Hook):
                 if isinstance(handler, logging.FileHandler):
                     handler.close()
 
-            for file in removed_files:
-                os.remove(file)
+            # for file in removed_files:
+            #     os.remove(file)

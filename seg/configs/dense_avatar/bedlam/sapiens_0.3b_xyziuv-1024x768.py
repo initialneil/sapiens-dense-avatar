@@ -15,7 +15,8 @@ model_name = 'sapiens_0.3b'; embed_dim=1024; num_layers=24
 # model_name = 'sapiens_2b'; embed_dim=1920; num_layers=48
 
 ##-----------------------------------------------------------------
-image_size = (768, 1024) ## width x height
+input_size = (1024, 1024)   ## dataset image size width x height
+image_size = (768, 1024)    ## working size width x height
 data_preprocessor = dict(size=image_size)
 
 patch_size=16
@@ -146,12 +147,12 @@ train_pipeline = [
     dict(type='LoadImage'),
     dict(
         type='RandomResize',
-        scale=(768, 1024), ## width, height
+        scale=input_size, ## width, height
         ratio_range=(0.2, 2.0), 
         keep_ratio=True),
     dict(type='RandomXYZIUVResizeCompensate'), ## compensate for the random resize augmentation
-    dict(type='RandomXYZIUVCrop', crop_size=(1024, 768)), ## height, width. works for xyziuv as well
-    dict(type='XYZIUVResize', scale=(768, 1024)), ## in case if image was too small and random crop returned the original image
+    dict(type='RandomXYZIUVCrop', crop_size=(image_size[1], image_size[0])), ## height, width. works for xyziuv as well
+    dict(type='XYZIUVResize', scale=image_size), ## in case if image was too small and random crop returned the original image
     dict(type='XYZIUVRandomFlip', prob=0.5,),
     dict(type='GenerateXYZIUVTarget', background_val=-1000), ## this should be less than used in the loss functions
     dict(type='PhotoMetricDistortion'),
@@ -160,7 +161,7 @@ train_pipeline = [
 
 test_pipeline = [
     dict(type='LoadImage'),
-    dict(type='Resize', scale=(768, 1024), keep_ratio=False), ## this is width x height, 768 x 1024
+    dict(type='Resize', scale=image_size, keep_ratio=False), ## this is width x height, 768 x 1024
     # # add loading annotation after ``Resize`` because ground truth
     # # does not need to do resize data transform
     # dict(type='LoadAnnotations'),
@@ -169,8 +170,8 @@ test_pipeline = [
 
 ##------------------------------------------------------------------------
 ## dataset root path
-train_data_root = '/mnt/Getea/Datasets/BEDLAM/images/test-2025.4.15-set1'
-test_data_root = '/mnt/Getea/Datasets/BEDLAM/images/test-2025.4.15-set1'
+train_data_root = '/mnt/Getea/Datasets/BEDLAM/images/test-2025.5.13-1x1'
+test_data_root = '/mnt/Getea/Datasets/BEDLAM/images/test-mix'
 
 dataset_train = dict(
         type='DenseAvatarGeneralDataset',
@@ -192,26 +193,24 @@ train_dataloader = dict(
         pipeline=train_pipeline))
 
 ##-----------------------------------------------------------------
-# val_evaluator = test_evaluator
-# val_dataloader = test_dataloader
 val_evaluator = None
-test_evaluator = None
 val_dataloader = None
-test_dataloader = None
 val_cfg = None
-test_cfg = None
+# test_evaluator = None
+# test_dataloader = None
+# test_cfg = None
 
 ##-----------------------------------------------------------------
-# test_dataloader = dict(
-#     batch_size=1,
-#     num_workers=4,
-#     persistent_workers=True,
-#     sampler=dict(type='DefaultSampler', shuffle=True),
-#     dataset=dict(
-#         type='DenseAvatarGeneralDataset',
-#         data_root=test_data_root,
-#         serialize_data=False,
-#         pipeline=test_pipeline))
-# test_evaluator = dict(type='XYZIUVMetric', 
-#                       output_dir=f'{test_data_root}/sapiens_0.3b_xyziuv_eval')
+test_dataloader = dict(
+    batch_size=1,
+    num_workers=4,
+    persistent_workers=True,
+    sampler=dict(type='DefaultSampler', shuffle=True),
+    dataset=dict(
+        type='DenseAvatarGeneralDataset',
+        data_root=test_data_root,
+        serialize_data=False,
+        pipeline=test_pipeline))
+test_evaluator = dict(type='XYZIUVMetric', 
+                      output_dir=f'{test_data_root}/sapiens_0.3b_xyziuv_eval')
 

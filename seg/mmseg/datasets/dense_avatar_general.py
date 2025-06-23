@@ -134,10 +134,13 @@ class DenseAvatarGeneralDataset(BaseSegDataset):
             cols = np.any(mask, axis=0)
 
             # Find the bounding box's bounds
-            y1, y2 = np.where(rows)[0][[0, -1]]
-            x1, x2 = np.where(cols)[0][[0, -1]]
+            if rows.any():
+                y1, y2 = np.where(rows)[0][[0, -1]]
+                x1, x2 = np.where(cols)[0][[0, -1]]
 
-            bbox = np.array([x1, y1, x2, y2], dtype=np.float32).reshape(1, 4)
+                bbox = np.array([x1, y1, x2, y2], dtype=np.float32).reshape(1, 4)
+            else:
+                bbox = np.array([0, 0, mask.shape[1]-1, mask.shape[0]-1], dtype=np.float32).reshape(1, 4)
         else:
             gt_xyziuv = None
             mask = None

@@ -20,7 +20,8 @@ TRAIN_BATCH_SIZE_PER_GPU=1
 
 ## resume_from: to resume a checkpoint from. Starts from the last epoch.
 ## load_from: to load a checkpoint from. not resume. Starts from epoch 0, just loads the weights.
-RESUME_FROM="/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_static1k-v2.1/epoch_42.pth"
+RESUME_FROM="/mnt/Getea/Datasets/BEDLAM/images/output-sapiens-xyziuv/sapiens_0.3b_xyziuv_static1k-v2.2/epoch_7.pth"
+# RESUME_FROM=''
 LOAD_FROM=''
 
 ##-------------------train mode-----------------------------------
